@@ -7,68 +7,65 @@ delta = 0.3333333
 clock = pygame.time.Clock()
 
 
-class chunk:
+class Chunk:
     def __init__(self, _x=0, _y=0):
         self.x = _x
         self.y = _y
 
 
 class SnakeGame:
-    head = None
-    lasthead = None
-    food = None
-    tail = None
-    vel = None
-
     def __init__(self):
-        head = chunk(0, 0)
 
-        print(type(head))
+        self.lasthead = Chunk(0, 0)
 
-        lasthead = chunk(0, 0)
-        food = chunk(random.randint(0, int(mapSize / chunkSize)-1), random.randint(0, int(mapSize / chunkSize)-1))
-        tail = [chunk(0, 0), chunk(0, 0), chunk(0, 0)]
-        vel = [0, 1]
+        self.head = Chunk(0, 0)
+
+        self.food = Chunk(random.randint(0, int(mapSize / chunkSize)-1), random.randint(0, int(mapSize / chunkSize)-1))
+
+        self.tail = [Chunk(0, 0), Chunk(0, 0), Chunk(0, 0)]
+
+        self.vel = [0, 1]
     
     def getEvent(self, event):
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP]:
-            if vel[1] == 0:
-                vel[1] = -1
-                vel[0] = 0
+            if self.vel[1] == 0:
+                self.vel[1] = -1
+                self.vel[0] = 0
         elif pressed[pygame.K_DOWN]:
-            if vel[1] == 0:
-                vel[1] = 1
-                vel[0] = 0
+            if self.vel[1] == 0:
+                self.vel[1] = 1
+                self.vel[0] = 0
         elif pressed[pygame.K_RIGHT]:
-            if vel[0] == 0:
-                vel[0] = 1
-                vel[1] = 0
+            if self.vel[0] == 0:
+                self.vel[0] = 1
+                self.vel[1] = 0
         elif pressed[pygame.K_LEFT]:
-            if vel[0] == 0:
-                vel[0] = -1
-                vel[1] = 0
+            if self.vel[0] == 0:
+                self.vel[0] = -1
+                self.vel[1] = 0
 
     def update(self):
-        lasthead = chunk(head.x, head.y)
-        head.x += vel[0]
-        head.x = head.x % (400 / chunkSize)
-        head.y += vel[1]
-        head.y = head.y % (400 / chunkSize)
+        self.lasthead = Chunk(self.head.x, self.head.y)
 
-        tail[len(tail) - 1].x = lasthead.x
-        tail[len(tail) - 1].y = lasthead.y
+        self.head.x += self.vel[0]
+        self.head.x = self.head.x % (400 / chunkSize)
+        self.head.y += self.vel[1]
+        self.head.y = self.head.y % (400 / chunkSize)
 
-        tmp = tail[len(tail) - 1]
-        tail.remove(tmp)
-        tail.insert(0, tmp)
+        self.tail[len(self.tail) - 1].x = self.lasthead.x
+        self.tail[len(self.tail) - 1].y = self.lasthead.y
 
-        if head.x == food.x and head.y == food.y:
-            food = chunk(random.randint(0, int(mapSize / chunkSize)-1), random.randint(0, int(mapSize / chunkSize)-1))
-            tail.append(chunk(-1,-1))
+        tmp = self.tail[len(self.tail) - 1]
+        self.tail.remove(tmp)
+        self.tail.insert(0, tmp)
+
+        if self.head.x == self.food.x and self.head.y == self.food.y:
+            self.food = Chunk(random.randint(0, int(mapSize / chunkSize)-1), random.randint(0, int(mapSize / chunkSize)-1))
+            self.tail.append(Chunk(-1,-1))
     
-        for i in tail:
-            if head.x == i.x and head.y == i.y:
+        for i in self.tail:
+            if self.head.x == i.x and self.head.y == i.y:
                 #Set GameOver
                 break
 
@@ -76,9 +73,9 @@ class SnakeGame:
         pygame.draw.rect(
             screen,
             (255, 150, 10),
-            pygame.Rect(head.x * chunkSize, head.y * chunkSize, chunkSize, chunkSize),
+            pygame.Rect(self.head.x * chunkSize, self.head.y * chunkSize, chunkSize, chunkSize),
         )
-        for i in tail:
+        for i in self.tail:
             pygame.draw.rect(
                 screen,
                 (150, 255, 76),
@@ -87,14 +84,12 @@ class SnakeGame:
         pygame.draw.rect(
             screen,
             (50, 255, 150),
-            pygame.Rect(food.x * chunkSize, food.y * chunkSize, chunkSize, chunkSize),
+            pygame.Rect(self.food.x * chunkSize, self.food.y * chunkSize, chunkSize, chunkSize),
         )
-
 
 
 pygame.init()
 screen = pygame.display.set_mode((mapSize, mapSize))
-
 game = SnakeGame()
 
 running = True
